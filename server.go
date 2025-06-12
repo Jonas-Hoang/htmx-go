@@ -32,5 +32,20 @@ func main() {
 		})
 	})
 
+	app.Get("/values/:ticker/:date", func(c *fiber.Ctx) error {
+		ticker := c.Params("ticker")
+		date := c.Params("date")
+		values := GetDailyValues(ticker)
+		dailyValue := GetDailyValueByDate(values, date)
+		if dailyValue == nil {
+			return c.Status(fiber.StatusNotFound).SendString("Value not found for the specified date")
+		}
+		return c.Render("daily_value", fiber.Map{
+			"Ticker": ticker,
+			"Date":   date,
+			"Value":  dailyValue,
+		})
+	})
+
 	app.Listen(":3000")
 }
